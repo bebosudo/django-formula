@@ -25,8 +25,12 @@ Set correct write permissions to error log file for site {{ site.name }}:
     - group: nginx
 
 
-# https://github.com/saltstack/salt/issues/14183#issuecomment-426565384
 Restart gunicorn service for site {{ site.name }}:
+  service.running:
+    - name: gunicorn_{{ site.name }}
+    - enable: True
+
+  # https://github.com/saltstack/salt/issues/14183#issuecomment-426565384
   cmd.run:
     - name: systemctl daemon-reload && systemctl restart gunicorn_{{ site.name }}
 
