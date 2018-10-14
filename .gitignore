@@ -1,0 +1,4 @@
+*.priv
+
+# Ignore the link in the example that points to ../../django/
+example/salt/django

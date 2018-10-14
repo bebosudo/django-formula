@@ -1,0 +1,12 @@
+[Unit]
+Description=gunicorn daemon for site {{ site.name }}
+After=network.target
+
+[Service]
+User={{ site.user_name }}
+Group=nginx
+WorkingDirectory={{ site.install_dir }}
+ExecStart={{ venv_dir }}/bin/gunicorn --bind unix:{{ site.install_dir }}/{{ site.name }}.sock {{ site.get("wsgi_path", site.settings_dir + ".wsgi") }}:application --access-logfile /var/log/access_{{ site.name }}.log --error-logfile /var/log/error_{{ site.name }}.log
+
+[Install]
+WantedBy=multi-user.target
