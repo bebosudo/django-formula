@@ -7,7 +7,7 @@ A server with >1G RAM is suggested.
 ## Quickstart (tested on Centos 7)
 
 Setup the Salt master, minion and api; download the [latest py3 version](https://repo.saltstack.com/#rhel) from the saltstack repo:
-```
+```console
 # yum install -y nano epel-release https://repo.saltstack.com/py3/redhat/salt-py3-repo-2018.3-1.el7.noarch.rpm
 # yum install -y salt-{master,minion,api} python34-pip git
 # pip3.4 install GitPython
@@ -17,21 +17,22 @@ Setup the Salt master, minion and api; download the [latest py3 version](https:/
 ```
 
 Download this repository to your server:
-```
+```console
 # curl -L https://github.com/bebosudo/django-formula/archive/master.tar.gz > django-formula.tar.gz
 # tar -xf django-formula.tar.gz
-# cd django-formula
+# cd django-formula-master
 ```
 
 Put the deployment scripts in:
-```
+```console
 # mv /etc/salt/master.d{,_orig}
 # ln -s $PWD/example/master.d /etc/salt/master.d
 # systemctl restart salt-master
 # systemctl enable  salt-master
 # systemctl restart salt-minion
 # systemctl enable  salt-minion
-                                 # Wait so communication between minions and master is set-up.
+# sleep 10s                      # Wait so communication between minions and master is set-up.
+
 # salt-key --accept-all -y
 # salt \* test.ping              # Verify that the minion (the node itself) is up and running.
 
@@ -43,7 +44,7 @@ Put the deployment scripts in:
 The pillar governing the sites configuration and installation is in `/srv/pillar/django_sites.sls`. By default it contains two example apps with sane defaults, so you should be able to test this formula straightaway.
 
 To manually trigger the global setup, run:
-```
+```console
 # rm -f /var/log/salt/{master,minion}; time \
       salt \* state.apply
 ```
@@ -54,7 +55,8 @@ After a while this should have setup two python websites at the IP of your serve
 ## Pull from private git repositories
 
 If the git repository you want to clone is private, or you want to download it using ssh, first create the user that will serve the application, then create a SSH key and add it to the git repo settings as a deploy key (details for [gitlab](https://docs.gitlab.com/ee/ssh/#deploy-keys), [github](https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-keys) and [bitbucket](https://confluence.atlassian.com/bitbucket/use-deployment-keys-294486051.html)):
-```
+
+```console
 # useradd shifu
 # su - shifu
 $ ssh-keygen -o -a 100 -t ed25519 -N "" -C "$(uname -n)" -f ~/.ssh/id_ed25519
@@ -76,7 +78,8 @@ By default, we request certificates to the [staging environment](https://letsenc
 This is done because the certificates requests to LE are rate-limited (to ensure fair usage to all the users): the staging environment has higher rate limits, so instead of 50 certificates per week you can request 30k; more details in the link above.
 
 Once you are ready and confident of your setup and want to deploy your sites to production, you can switch to the production servers in the `letsencrypt.sls` pillar; make sure the final `config` variable is set like this:
-```
+
+```yaml
   config: |
     server = https://acme-v01.api.letsencrypt.org/directory
     # server = https://acme-staging.api.letsencrypt.org/directory
@@ -94,7 +97,8 @@ Now open `/srv/reactor/git_hook.sls` and edit the secret key in the if: \
 (on linux you can generate a random token with: `< /dev/urandom tr -dc 'A-Za-z0-9*,./:<=>?@[]^_{|}~' | head -c 100`).
 
 Then (re)start the salt-api service and enable it at boot:
-```
+
+```console
 # systemctl restart salt-api
 # systemctl enable salt-api
 ```
@@ -119,4 +123,3 @@ Make sure you change the header token to `'X-Hub-Signature'`, as shown in the re
 ### Bitbucket
 
 Despite what reported in their [documentation here](https://confluence.atlassian.com/bitbucketserver059/managing-webhooks-in-bitbucket-server-949255017.html), in the free version of bitbucket.com there's not a field for inputing a "Secret" as with other providers; feel free to ping me if you know how to setup bitbucket.
-
