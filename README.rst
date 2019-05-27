@@ -5,7 +5,7 @@ django-formula
 | A SaltStack formula to configure and deploy multiple django websites.
 | Tested on Centos 7.
 
-A working example, using Postgres, NGINX, gunicorn and Let's Encrypt, is available in the `example directory <https://github.com/bebosudo/django-formula/example/>`_.
+A working example, using Postgres, NGINX, gunicorn and Let's Encrypt, is available in the `example directory <https://github.com/bebosudo/django-formula/tree/master/example/>`_.
 
 
 **NOTE**
